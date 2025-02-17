@@ -1,0 +1,7 @@
+# EDITOR
+.vscode
+
+# ENV VARIABLES
+.env.*
+
+node_modules
