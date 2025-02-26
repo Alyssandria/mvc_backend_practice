@@ -1,20 +1,10 @@
 import Url from "../utils/class/Url.js"
-import Schema from "../utils/class/Schema.js";
-    import { CONSTANTS } from "../utils/constants.js";
+import { CONSTANTS } from "../utils/constants.js";
 import { parseBody } from "../utils/parseBody.js";
 import { sendResponse } from "../utils/sendResponse.js";
 
 export const authHandler = async (req, res, next) => {
 	const {url, method} = req;
-
-	const hello = new Schema({
-		sheesh: {
-			type: "string",
-		}
-	});
-
-
-	console.log(hello.definition);
 
 	// HANDLES AUTH ROUTES (/SIGNUP ; /SIGNIN)
 	if(url.startsWith(CONSTANTS.ROUTES.API_AUTH) && Url.getSegmentLength(url) === 3){
@@ -27,10 +17,9 @@ export const authHandler = async (req, res, next) => {
 			try{
 			const body = await parseBody(req);
 
-			// TODO: VALIDATE BODY IF IT MATCHES THE SCHEMA
-			
-			
-			console.log(body);
+			// TODO: HANDLE VALIDATION
+			// TODO: CREATE AUTH MODEL -> HANDLE DB
+
 			} catch(err){
 				console.error(`Unable to parse request make sure it is valid json: Error message: ${err.message}`);
 				return;
