@@ -14,5 +14,5 @@ client.listen(CONSTANTS.SERVER.PORT, CONSTANTS.SERVER.HOSTNAME, () => {
   console.log(`Server running at port ${CONSTANTS.SERVER.PORT}`);
 
   // CONNECT TO THE DATABASE ON SERVER START
-  connectDB();
+  connectDB().catch(error => console.error(error));
 });

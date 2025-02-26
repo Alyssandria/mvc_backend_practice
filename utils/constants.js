@@ -14,4 +14,13 @@ export const CONSTANTS = {
     POST: "POST",
     GET: "GET",
   },
+	ROUTES : {
+		API_BASE: "/api",
+		API_AUTH: "/api/auth",
+		API_NOTES: "/api/notes",
+		AUTH: {
+			SIGNUP : "/signup",
+			SIGNIN : "/signin",
+		},
+	}
 };
