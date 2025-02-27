@@ -1,5 +1,7 @@
+import AuthSchema from "../models/auth.schema.js";
 import Url from "../utils/class/Url.js"
 import { CONSTANTS } from "../utils/constants.js";
+import { hashPassword } from "../utils/hashPassword.js";
 import { parseBody } from "../utils/parseBody.js";
 import { sendResponse } from "../utils/sendResponse.js";
 
@@ -14,15 +16,30 @@ export const authHandler = async (req, res, next) => {
 					message:"Unsupported Media Type: Content must have a mime type of application/json",
 				});
 			}
+
 			try{
 			const body = await parseBody(req);
 
-			// TODO: HANDLE VALIDATION
+			// VALIDATE BODY
+			const validationResult = AuthSchema.validate(body);
+			if(!validationResult.ok){
+				sendResponse(res, 400, {
+					message: validationResult.message,
+					error: {...validationResult.error}
+				})
+			}
+			
+			const hashedPassword =  await hashPassword(body.password);
+
+			console.log(hashedPassword);
+
 			// TODO: CREATE AUTH MODEL -> HANDLE DB
 
 			} catch(err){
-				console.error(`Unable to parse request make sure it is valid json: Error message: ${err.message}`);
-				return;
+				sendResponse(res, 400, {
+					errorMsg: err.message,
+					message:`Unable to parse request make sure it is valid JSON`,
+				})
 			}
 		}
 
