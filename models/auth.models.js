@@ -9,7 +9,7 @@ class AuthModel{
 
 	async signup(){
 		const users = DB.collection("users");
-		const existingUsername = users.findOne({username: this.username});
+		const existingUsername = await users.findOne({username: this.username});
 		if(existingUsername){
 			return null;
 		}
