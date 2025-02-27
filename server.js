@@ -4,6 +4,7 @@ import { middlwareHandler } from "./middleware/middlewareHandler.js";
 import { CONSTANTS } from "./utils/constants.js";
 import { sendResponse } from "./utils/sendResponse.js";
 import http from "node:http";
+import crypto from "crypto"
 
 // HTTP SERVER
 const client = http.createServer((req, res) => {
@@ -13,6 +14,8 @@ const client = http.createServer((req, res) => {
 		message:"Unsupported Media Type: Content must have a mime type of application/json",
 		});
 	} 
+
+	console.log(crypto.randomBytes(32).toString("base64"));
 	
 	// SEND THE REQUEST AND RESPONSE TO THE MIDDLEWARE FOR HANDLING
   middlwareHandler(req, res);

@@ -11,9 +11,9 @@ export const authHandler = async (req, res, next) => {
 
 	// HANDLES AUTH ROUTES (/SIGNUP ; /SIGNIN)
 	if(url.startsWith(CONSTANTS.ROUTES.API_AUTH) && Url.getSegmentLength(url) === 3){
-
+		const segment = Url.getSegmentPosition(url, 2);
 		// HANDLE SIGNUP
-		if(Url.getSegmentPosition(url, 2) === CONSTANTS.ROUTES.AUTH.SIGNUP && method === CONSTANTS.HTTP_METHODS.POST){
+		if( segment === CONSTANTS.ROUTES.AUTH.SIGNUP && method === CONSTANTS.HTTP_METHODS.POST){
 
 			try{
 			const body = await parseBody(req);
@@ -39,8 +39,8 @@ export const authHandler = async (req, res, next) => {
 		}
 
 
-		if(Url.getSegments(url, 2) === CONSTANTS.ROUTES.AUTH.SIGNIN && method === CONSTANTS.HTTP_METHODS.POST){	
-		
+		// HANDLE LOGIN
+		if(segment === CONSTANTS.ROUTES.AUTH.SIGNIN && method === CONSTANTS.HTTP_METHODS.POST){	
 		try{
 			const body = await parseBody(req);
 
@@ -52,6 +52,8 @@ export const authHandler = async (req, res, next) => {
 					error: {...validationResult.error}
 				})
 			}
+
+			return AuthController.userLogin(res, body.username, body.password);
 			
 		} catch(err){
 			sendResponse(res, 400, {
@@ -65,8 +67,9 @@ export const authHandler = async (req, res, next) => {
 	}
 
 
-	// HANDLES AUTHENTICATION
+	// HANDLE PRIVATE ROUTES
 	if(url.startsWith(CONSTANTS.ROUTES.API_NOTES))	{
+		// TODO: CHECK AUTHORIZATION BEFORE VIEWING
 		next()
 	}
 }

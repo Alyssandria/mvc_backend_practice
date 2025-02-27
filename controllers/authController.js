@@ -1,5 +1,8 @@
 import AuthModel from "../models/auth.models.js";
+import { comparePasswords } from "../utils/comparePasswords.js";
+import { generateToken } from "../utils/generateToken.js";
 import { sendResponse } from "../utils/sendResponse.js";
+import jwt from "jsonwebtoken"
 
 class AuthController {
 	static async userSignup(res, username, password){
@@ -22,6 +25,25 @@ class AuthController {
 				message: "Internal Server Error"
 			})
 		}
+	}
+
+	static async userLogin(res, username, password){
+		const authModel = new AuthModel(username, password);
+
+		const user = await authModel.findUser();
+
+		if(!user || !(await comparePasswords(password, user.password))){
+			return sendResponse(res, 401, {
+				message: "Incorrect username or password",
+			})
+		}
+		
+		// SEND AUTH TOKEN TO USER
+		sendResponse(res, 200, {
+			token: generateToken(user),
+		})
+
+		
 	}
 }
 
