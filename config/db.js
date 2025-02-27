@@ -12,14 +12,63 @@ let DB;
 export const connectDB = async () => {
   if (!DB) {
     try {
-      await client.connect();
 
+      await client.connect();
       console.log("Database Connected Successfully");
-      DB = client.db();
+
+		  DB = client.db();
+
+			const requiredPrompt = (field) => `${field} must be of type string and is required`;
+
+			// INIT USERS COLLECTION
+			DB.createCollection("users", {
+				validator: {
+					$jsonSchema: {
+						bsonType: "object",
+						title: "User object validation",
+						required: ["username", "password"],
+						properties: {
+							username: {
+								bsonType: "string",
+								description: requiredPrompt("username"),
+							},
+							password: {
+								bsonType: "string",
+								description: requiredPrompt("Password"),
+							},
+							notes: {
+								bsonType: "array",
+								items: {
+									bsonType: "object",
+									required: ["title", "content"],
+									properties: {
+										title: {
+											bsonType: "string",
+											description: requiredPrompt("Title"),
+										},
+										password: {
+											bsonType: "string",
+											description: requiredPrompt("Password"),
+										}
+									} 
+								}
+							}
+						}
+					}
+				}
+			})
+
+
+			process.on("SIGINT", async () => {
+				console.log("Connection Terminated: closing mongoDB connection");
+				await client.close();
+				console.log("MongoDB client successfully closed");
+				process.exit();
+			})
     } catch (error) {
-      console.log(error);
+      console.error(new Error(error));
+			process.exit(1);
     }
   }
-
   return DB;
 };
