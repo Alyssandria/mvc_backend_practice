@@ -1,9 +1,16 @@
-import bcrypt from "bcrypt"
+import { connectDB } from "../config/db.js";
 
-class Auth{
+const DB = await connectDB();
+class AuthModel{
 	constructor(username, password){
 		this.username = username;	
-		// TODO: HASH THIS PASSWORD FIRST
 		this.password = password;
 	}
+
+	async signup(){
+		const users = DB.collection("users");
+		return users.insertOne({username: this.username, password: this.password, notes: []});
+	}
 }
+
+export default AuthModel;

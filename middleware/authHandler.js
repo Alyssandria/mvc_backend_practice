@@ -1,3 +1,5 @@
+import AuthController from "../controllers/authController.js";
+import AuthModel from "../models/auth.models.js";
 import AuthSchema from "../models/auth.schema.js";
 import Url from "../utils/class/Url.js"
 import { CONSTANTS } from "../utils/constants.js";
@@ -10,7 +12,10 @@ export const authHandler = async (req, res, next) => {
 
 	// HANDLES AUTH ROUTES (/SIGNUP ; /SIGNIN)
 	if(url.startsWith(CONSTANTS.ROUTES.API_AUTH) && Url.getSegmentLength(url) === 3){
-		if(Url.getSegmentPosition(url, 2) === CONSTANTS.ROUTES.AUTH.SIGNIN && method === CONSTANTS.HTTP_METHODS.POST){
+
+		if(Url.getSegmentPosition(url, 2) === CONSTANTS.ROUTES.AUTH.SIGNUP && method === CONSTANTS.HTTP_METHODS.POST){
+
+			// HANDLE INVALID CONTENT TYPE
 			if(!req.headers["content-type"] || req.headers["content-type"] !== 'application/json'){
 				sendResponse(res, 415, {
 					message:"Unsupported Media Type: Content must have a mime type of application/json",
@@ -19,7 +24,6 @@ export const authHandler = async (req, res, next) => {
 
 			try{
 			const body = await parseBody(req);
-
 			// VALIDATE BODY
 			const validationResult = AuthSchema.validate(body);
 			if(!validationResult.ok){
@@ -30,10 +34,8 @@ export const authHandler = async (req, res, next) => {
 			}
 			
 			const hashedPassword =  await hashPassword(body.password);
-
-			console.log(hashedPassword);
-
-			// TODO: CREATE AUTH MODEL -> HANDLE DB
+			
+			return AuthController.userSignup(res, body.username, hashedPassword);
 
 			} catch(err){
 				sendResponse(res, 400, {
