@@ -1,5 +1,4 @@
 import AuthController from "../controllers/authController.js";
-import AuthModel from "../models/auth.models.js";
 import AuthSchema from "../models/auth.schema.js";
 import Url from "../utils/class/Url.js"
 import { CONSTANTS } from "../utils/constants.js";
@@ -13,14 +12,8 @@ export const authHandler = async (req, res, next) => {
 	// HANDLES AUTH ROUTES (/SIGNUP ; /SIGNIN)
 	if(url.startsWith(CONSTANTS.ROUTES.API_AUTH) && Url.getSegmentLength(url) === 3){
 
+		// HANDLE SIGNUP
 		if(Url.getSegmentPosition(url, 2) === CONSTANTS.ROUTES.AUTH.SIGNUP && method === CONSTANTS.HTTP_METHODS.POST){
-
-			// HANDLE INVALID CONTENT TYPE
-			if(!req.headers["content-type"] || req.headers["content-type"] !== 'application/json'){
-				sendResponse(res, 415, {
-					message:"Unsupported Media Type: Content must have a mime type of application/json",
-				});
-			}
 
 			try{
 			const body = await parseBody(req);
@@ -40,9 +33,33 @@ export const authHandler = async (req, res, next) => {
 			} catch(err){
 				sendResponse(res, 400, {
 					errorMsg: err.message,
-					message:`Unable to parse request make sure it is valid JSON`,
+					message:`Unable to parse request! Make sure it is valid JSON`,
 				})
 			}
+		}
+
+
+		if(Url.getSegments(url, 2) === CONSTANTS.ROUTES.AUTH.SIGNIN && method === CONSTANTS.HTTP_METHODS.POST){	
+		
+		try{
+			const body = await parseBody(req);
+
+			// VALIDATE BODY
+			const validationResult = AuthSchema.validate(body);
+			if(!validationResult.ok){
+				sendResponse(res, 400, {
+					message: validationResult.message,
+					error: {...validationResult.error}
+				})
+			}
+			
+		} catch(err){
+			sendResponse(res, 400, {
+				errorMsg: err.message,
+				message: "Unable to parse request! Make sure it is valid JSON"
+			})
+		}
+
 		}
 
 	}

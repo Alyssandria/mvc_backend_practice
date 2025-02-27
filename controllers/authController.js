@@ -6,8 +6,14 @@ class AuthController {
 		const authModel = new AuthModel(username, password);
 		
 		try{
-			await authModel.signup()	
-			sendResponse(res, 200, {
+			const signup = await authModel.signup()	
+
+			if(!signup){
+				return sendResponse(res, 409, {
+					message: "Username already exists",
+				})
+			}
+			sendResponse(res, 201, {
 				message: "Sign in Successfull"
 			})
 		} catch(err){
