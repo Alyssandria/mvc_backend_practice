@@ -8,9 +8,7 @@ class DashboardController{
 	static async getUserDetails(res, token){
 		try{
 			const payload = jwt.verify(token, process.env.JWT_SECRET);
-			console.log(payload.userId);
 			const user = new UserModel(payload.userId);
-
 
 			const result = await user.getUserDetails()
 			

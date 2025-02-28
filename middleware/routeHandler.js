@@ -12,7 +12,7 @@ export const routeHandler = async (req, res) => {
 	}
 
 	if(url.startsWith(CONSTANTS.ROUTES.API_NOTES)){
-		noteRoutes(req, res);
+		await noteRoutes(req, res);
 	}
 	
 };
