@@ -3,6 +3,7 @@ import { comparePasswords } from "../utils/comparePasswords.js";
 import { generateToken } from "../utils/generateToken.js";
 import { sendResponse } from "../utils/sendResponse.js";
 import jwt from "jsonwebtoken"
+import process from "node:process"
 
 class AuthController {
 	static async userSignup(res, username, password){
@@ -42,8 +43,35 @@ class AuthController {
 		sendResponse(res, 200, {
 			token: generateToken(user),
 		})
+	}
 
-		
+	static async authUserToken(token){
+		try{
+			const authToken = jwt.verify(token, process.env.JWT_SECRET)
+
+			// IF TOKEN IS VALID BUT THE PAYLOAD IS NOT
+
+			const authModelRes = await AuthModel.validateToken(authToken.userId)
+			if(!authModelRes.success){
+				return {
+					success: false, 
+					message: "Unauthorized Request Error"
+				}
+			}
+
+			return {
+				success: true,
+				message: "Request Authorization Successfull"
+			}
+
+		} catch(err){
+			// IF TOKEN IS INVALID
+			console.error(err.message);
+			return {
+				success: false,
+				message: "Unauthorized Request Error"
+			}	
+		}
 	}
 }
 

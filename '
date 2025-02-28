@@ -72,26 +72,18 @@ export const authHandler = async (req, res, next) => {
 
 	// HANDLE PRIVATE ROUTES
 	if(url.startsWith(CONSTANTS.ROUTES.API_NOTES) || url.startsWith(CONSTANTS.ROUTES.API_DASHBOARD))	{
-
-		// CHECK FOR TOKEN IN AUTH HEADER
-		const authHeader = req.headers['authorization']
+		// TODO: CHECK AUTHORIZATION BEFORE VIEWING
+		const authHeader = req.headers['Authorization']
 		if(!authHeader || !authHeader.startsWith('Bearer ')){
 			return sendResponse(res, 401, {
 				message: "Unauthorized error: Missing or Invalid Authorization error",
 			})
 		}
 
-
-		// IF AUTH TOKEN IS INVALID
-		const authValidationResult = await AuthController.authUserToken(authHeader.split("Bearer ")[1]);
+		// EXTRACT TOKEN
+		const token = authHeader.split("Bearer ")[1];
 		
-		if(!authValidationResult.success){
-			return sendResponse(res, 401, {
-				message: "Unauthorized error: Missing or Invalid Authorization error",
-			})	
-		};
-
-		// PROCEED TO ROUTE HANDLER
+		console.log(jwt.verify(token, process.env.JWT_SECRET))
 		next()
 	}
 }
