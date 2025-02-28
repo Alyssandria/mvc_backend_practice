@@ -21,20 +21,19 @@ class AuthModel{
 	}
 
 	async findUser(){
-		const users = this.#usersCollection;
-		
-		const user = await users.findOne({username: this.username});
+			const users = DB.collection("users");
+			
+			const user = await users.findOne({username: this.username});
 
-		if(!user){
-			return null;
-		}
+			if(!user){
+				return null;
+			}
 
-		return user;
+			return user;
 	}
 
 	static async validateToken(userId){
 		const users = DB.collection("users");
-
 		
 		try{
 

@@ -1,19 +1,34 @@
-import { connectDB } from "../config/db";
+import { ObjectId } from "mongodb";
+import { connectDB } from "../config/db.js";
 
 const DB = await connectDB();
 
-class User {
+class UserModel {
 	constructor(userId){
 		this.userId = userId;
 	}
 
-	getUserData(){
-				
+	async getUserDetails(){
+		const users = await DB.collection("users");
+		
+		try{
+			ObjectId.isValid(this.userId);
+			const id = ObjectId.createFromHexString(this.userId);
+
+			const user = await users.findOne({_id: id});
+			return user
+		} catch(err) {
+			console.error(err.message);
+			return null;
+
+		}
+
 	}
+	
 	
 
 	
 
 }
 
-export default User;
+export default UserModel;

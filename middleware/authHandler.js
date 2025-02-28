@@ -5,8 +5,6 @@ import { CONSTANTS } from "../utils/constants.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import { parseBody } from "../utils/parseBody.js";
 import { sendResponse } from "../utils/sendResponse.js";
-import process from "node:process"
-import jwt from "jsonwebtoken"
 
 export const authHandler = async (req, res, next) => {
 	const {url, method} = req;
@@ -91,7 +89,7 @@ export const authHandler = async (req, res, next) => {
 			})	
 		};
 
-		// PROCEED TO ROUTE HANDLER
+		// PROCEED TO PRIVATE ROUTE HANDLER
 		next()
 	}
 }
