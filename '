@@ -72,7 +72,6 @@ export const authHandler = async (req, res, next) => {
 
 	// HANDLE PRIVATE ROUTES
 	if(url.startsWith(CONSTANTS.ROUTES.API_NOTES) || url.startsWith(CONSTANTS.ROUTES.API_DASHBOARD))	{
-		// TODO: CHECK AUTHORIZATION BEFORE VIEWING
 		const authHeader = req.headers['Authorization']
 		if(!authHeader || !authHeader.startsWith('Bearer ')){
 			return sendResponse(res, 401, {

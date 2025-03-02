@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import NoteModel from "../models/notes.models.js";
 import { sendResponse } from "../utils/sendResponse.js";
 import jwt from "jsonwebtoken"
@@ -28,6 +29,7 @@ class NoteController {
 		}
   }
 
+	// should title and content be merged into a single param?
 	static async addUserNotes(res, token, title, content){
 		try{
 			const userId = jwt.verify(token, process.env.JWT_SECRET).userId;
@@ -45,7 +47,7 @@ class NoteController {
 
 			sendResponse(res, 201, {
 				message: "Note created",
-				data: {title, content}
+				data: addNote.notes[addNote.notes.length - 1] // ONLY RETURN THE LATEST
 			})
 
 		} catch(err){
@@ -53,6 +55,34 @@ class NoteController {
 			sendResponse(res, 401, {
 				message: "Unauthorized request"
 			})		
+		}
+	}
+
+	static async getUserNote(res, token, id){
+		try{
+			const userId = jwt.verify(token, process.env.JWT_SECRET).userId;
+
+			const noteModel = new NoteModel({userId: userId});
+			
+			const note = await noteModel.findNote(id);
+
+			if(!note){
+				return sendResponse(res, 404, {
+					message: "Note not found",
+					noteId: id,
+				})
+			}
+
+			return sendResponse(res, 200, {
+				message: "Note retrieved successfully",
+				data: note
+			})
+
+		} catch(err){
+			console.error(err);
+			return sendResponse(res, 401, {
+				message: "Unauthorized request"	
+			})
 		}
 	}
 }

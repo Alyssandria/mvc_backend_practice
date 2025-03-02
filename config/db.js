@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import process from "node:process";
 const CONNECTION_STRING = process.env.URI;
 
@@ -40,15 +40,19 @@ export const connectDB = async () => {
 								bsonType: "array",
 								items: {
 									bsonType: "object",
-									required: ["title", "content"],
+									required: ["noteId", "title", "content"],
 									properties: {
+										noteId: {
+											bsonType: "objectId",
+											description: ""
+										},
 										title: {
 											bsonType: "string",
 											description: requiredPrompt("Title"),
 										},
-										password: {
+										content: {
 											bsonType: "string",
-											description: requiredPrompt("Password"),
+											description: requiredPrompt("Content"),
 										}
 									} 
 								}

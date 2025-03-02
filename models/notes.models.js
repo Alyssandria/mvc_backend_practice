@@ -12,8 +12,8 @@ class NoteModel {
 	#validateObjectId(){
 		try{
 			ObjectId.isValid(this.userId)
-			const id = ObjectId.createFromHexString(this.userId);
-			return id;
+			const objectId = ObjectId.createFromHexString(this.userId);
+			return objectId;
 		}	catch(err){
 			console.error(err.message);
 			return null
@@ -41,9 +41,41 @@ class NoteModel {
 			return null;
 		}
 		
-		const notes = await users.findOneAndUpdate({_id: new ObjectId(id)}, {$push: {notes: {title: this.title, content: this.content} } }, {returnDocument: "after"})
+		const notes = await users.findOneAndUpdate({_id: new ObjectId(id)}, {$push: {notes: {noteId: new ObjectId(), title: this.title, content: this.content} } }, {returnDocument: "after"})
 	
 		return notes;
+	}
+
+	async findNote(noteId){
+		const users = await DB.collection("users");
+
+		const id = this.#validateObjectId()
+		if(!id){
+			return null;	
+		}
+
+		const note = await users.aggregate([
+			{
+				$match : {
+				_id: new ObjectId(id)
+				}
+			}, 
+			{
+				$project : {
+					_id: 0,	
+				notes: {
+					$filter : {
+						input: "$notes",
+						as: "note",
+						cond: { $eq: ["$$note.noteId", new ObjectId(noteId)]}
+						}
+					}
+				}
+			}
+			
+		]).toArray();
+
+		return note[0]?.notes[0] || null;
 	}
 }
 

@@ -1,6 +1,6 @@
 import Schema from "../utils/class/Schema.js";
 
-const NoteSchema = new Schema({
+export const AddNoteSchema = new Schema({
 	title: {
 		type: 'string',
 		required: true
@@ -11,4 +11,11 @@ const NoteSchema = new Schema({
 	}
 })
 
-export default NoteSchema;
+export const UpdateNoteSchema = new Schema({
+	title: {
+		type: "string",
+	},
+	content: {
+		type: "string"
+	}
+})
