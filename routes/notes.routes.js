@@ -46,6 +46,7 @@ export const noteRoutes = async (req, res) => {
 	// CHECK FOR ROUTES WITH ID
 	if(Url.getSegmentLength(url) === 3){
 
+		// GET ID
 		let id;
 		try{
 			const paramId = Url.getSegmentPosition(url, 2).split("/")[1];
@@ -64,18 +65,36 @@ export const noteRoutes = async (req, res) => {
 			return NoteController.getUserNote(res, token, id)
 		}
 		
+		// UPDATE  NOTE  ":id"
 		if(method === CONSTANTS.HTTP_METHODS.POST){
-			const body = await parseBody(req);
 
-			const validation = UpdateNoteSchema.validate(body);
+			try{
+				const body = await parseBody(req);
 
-			if(!validation.ok){
+				const validation = UpdateNoteSchema.validate(body);
+
+				if(!validation.ok){
 					return sendResponse(res, 400, {
 						 message: validation.message,
 						 error: {...validation.error}
-					})
+					});
 				}
 
+
+			return NoteController.updateUserNote(res, token, id, body);
+				
+			} catch(err){
+				console.error(err);
+				return sendResponse(res, 400, {
+					message: "Unable to parse request! Make sure it is valid JSON",
+					error: err.message
+				})
 			}
+			
+
+			
 		}
+
+
+	}
 };

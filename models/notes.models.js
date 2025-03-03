@@ -77,6 +77,43 @@ class NoteModel {
 
 		return note[0]?.notes[0] || null;
 	}
+
+
+	async updateNote(noteId, updateObj){
+		const users = await DB.collection("users");
+		
+		// get the keys then create another object using this format "notes.$.<fieldname>: <value>"
+
+		const updateKeys = Object.keys(updateObj);
+		const updateFields = updateKeys.reduce((acc, key) => {
+			acc[`notes.$.${key}`] = updateObj[key];
+			return acc;
+		}, {})
+
+
+
+		const userId = this.#validateObjectId();
+
+		if(!userId){
+			return null;
+		}
+
+
+		const update = await users.findOneAndUpdate(
+		{
+			_id: new ObjectId(userId), 
+			"notes.noteId": new ObjectId(noteId)
+		}, 
+		{
+			$set: updateFields
+		},
+		{
+			returnDocument: "after" 
+		}
+		
+		)	
+		return update;
+	}
 }
 
 export default NoteModel;

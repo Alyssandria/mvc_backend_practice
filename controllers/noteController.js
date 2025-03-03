@@ -3,6 +3,7 @@ import NoteModel from "../models/notes.models.js";
 import { sendResponse } from "../utils/sendResponse.js";
 import jwt from "jsonwebtoken"
 import process from "node:process"
+import { warn } from "node:console";
 
 class NoteController {
   static async getUserNotes(res, token) {
@@ -68,7 +69,7 @@ class NoteController {
 
 			if(!note){
 				return sendResponse(res, 404, {
-					message: "Note not found",
+					message: "Note with the specified ID is not found",
 					noteId: id,
 				})
 			}
@@ -83,6 +84,36 @@ class NoteController {
 			return sendResponse(res, 401, {
 				message: "Unauthorized request"	
 			})
+		}
+	}
+
+	static async updateUserNote(res, token, id, updateData){
+		try{
+			const userid = jwt.verify(token, process.env.JWT_SECRET).userId;
+
+			const notemodel = new NoteModel({userId: userid});
+
+			const update = await notemodel.updateNote(id, updateData);
+
+			if(!update){
+				return sendResponse(res, 404, {
+					message: "Note with the specified ID is not found",
+					noteId: id,
+				})
+			}
+
+			const updatedNote = await notemodel.findNote(id);
+
+			return sendResponse(res, 200, {
+				message: "Note updated successfully",
+				data: updatedNote,
+			})
+		} catch(err){
+			console.error(err);
+			return sendResponse(res, 401, {
+				message: "Unauthorized request",
+			})
+
 		}
 	}
 }
