@@ -84,15 +84,17 @@ export const noteRoutes = async (req, res) => {
 			return NoteController.updateUserNote(res, token, id, body);
 				
 			} catch(err){
-				console.error(err);
-				return sendResponse(res, 400, {
-					message: "Unable to parse request! Make sure it is valid JSON",
-					error: err.message
-				})
-			}
-			
+					console.error(err);
+					return sendResponse(res, 400, {
+						message: "Unable to parse request! Make sure it is valid JSON",
+						error: err.message
+					})
+				}
+		}
 
-			
+		// DELETE NOTE ":id"
+		if(method === CONSTANTS.HTTP_METHODS.DELETE){
+			return NoteController.deleteUserNote(res, token, id);
 		}
 
 

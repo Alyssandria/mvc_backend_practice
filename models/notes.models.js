@@ -110,9 +110,39 @@ class NoteModel {
 		{
 			returnDocument: "after" 
 		}
-		
-		)	
+		);
 		return update;
+	}
+
+
+	async deleteNote(noteId){
+		const users = await DB.collection("users");
+
+		const userId = this.#validateObjectId();
+
+		const deletedUser = await users.findOneAndUpdate(
+		{
+			_id: new ObjectId(userId),
+			"notes.noteId": new ObjectId(noteId)
+		}, 
+		{
+			$pull: {
+				notes: {
+					noteId: new ObjectId(noteId),
+				}
+			}	
+		},
+		{
+			returnDocument: "after",
+			projection: {
+				_id: 0,
+				username: 0,
+				password: 0,
+			}
+		}
+		);
+
+		return deletedUser;
 	}
 }
 

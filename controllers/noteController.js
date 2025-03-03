@@ -113,9 +113,38 @@ class NoteController {
 			return sendResponse(res, 401, {
 				message: "Unauthorized request",
 			})
-
 		}
 	}
+
+	static async deleteUserNote(res, token, id){
+		try{
+			const userid = jwt.verify(token, process.env.JWT_SECRET).userId;
+
+			const notemodel = new NoteModel({userId: userid});
+
+			const deleteNote = await notemodel.deleteNote(id);
+
+			if(!deleteNote){
+				return sendResponse(res, 404, {
+					message: "Note with the specified ID is not found",
+					noteId: id,
+				})
+			}
+
+			console.log(deleteNote);
+
+			return sendResponse(res, 200, {
+				message: "Note updated successfully",
+				data: deleteNote,
+			})
+		} catch(err){
+			console.error(err);
+			return sendResponse(res, 401, {
+				message: "Unauthorized request",
+			})
+		}
+	}
+
 }
 
 export default NoteController;
